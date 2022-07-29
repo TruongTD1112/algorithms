@@ -2,6 +2,7 @@ package algorithms.data_structure;
 
 import algorithms.static_algorithms.AStar;
 
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class TSP {
@@ -19,6 +20,8 @@ public class TSP {
     GeneticAlgorithm ga;
 
     public void init(List<NodeCoordinate> nodeCoordinates) {
+        AStar aStar = new AStar(36,40);
+        aStar.init();
         numNodes = nodeCoordinates.size();
         nodeMap = new HashMap<>();
         int[] nodes = new int[numNodes];
@@ -31,7 +34,7 @@ public class TSP {
         distanceMatrix = new int[numNodes][numNodes];
         for (int i = 0; i < numNodes; i++) {
             for (int j = 0; j < numNodes; j++) {
-                distanceMatrix[i][j] = NodeCoordinate.betweenManhattan(nodeMap.get(i), nodeMap.get(j));
+                distanceMatrix[i][j] = aStar.findShortestPathV2(nodeMap.get(i), nodeMap.get(j));
             }
         }
 
@@ -81,6 +84,10 @@ public class TSP {
         for (NodeCoordinate nodeCoordinate : subList) {
             System.out.printf("(%d, %d)", nodeCoordinate.getX(), nodeCoordinate.getY());
         }
+        for (int i= 0; i< solution.length; i++ ) {
+            System.out.println(distanceMatrix[solution[i]][solution[i+1]]);
+        }
+        System.out.println(distanceMatrix[solution.length][0]);
         return subList;
     }
 
@@ -115,8 +122,8 @@ public class TSP {
 //            mark[0] = true; // keep
 //            solution[0] = 0; // keep
 //            traceV2(1); // keep
-//            trace(0,0);
-//            return findBestSolution(); // keep
+//            return findBestSolution();// keep
+
 //        } else {
             int[] orderList = ga.findTSPBYGA();
             List<NodeCoordinate> result = new ArrayList<>();
@@ -143,7 +150,6 @@ public class TSP {
         NodeCoordinate nodeCoordinate6 = new NodeCoordinate(20, 24);
         NodeCoordinate nodeCoordinate7 = new NodeCoordinate(8, 31);
         NodeCoordinate nodeCoordinate8 = new NodeCoordinate(4, 36);
-
         NodeCoordinate block1 = new NodeCoordinate(2, 1);
         NodeCoordinate block2 = new NodeCoordinate(2, 2);
         NodeCoordinate block3 = new NodeCoordinate(2, 3);
@@ -156,14 +162,15 @@ public class TSP {
         NodeCoordinate block10 = new NodeCoordinate(1, 4);
         NodeCoordinate block11 = new NodeCoordinate(1, 5);
         NodeCoordinate block12 = new NodeCoordinate(1, 6);
-        List<NodeCoordinate> blockNodeCoordinateList = Arrays.asList(block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12);
+        List<NodeCoordinate> blockNodeCoordinateList = Arrays.asList(block2, block3, block5, block6, block7, block6, block7, block8, block9, block10, block11, block12);
         aStar.setBlockedList(blockNodeCoordinateList);
         TSP tsp = new TSP();
-        tsp.init(Arrays.asList(nodeCoordinate1, nodeCoordinate2, nodeCoordinate3, nodeCoordinate4, nodeCoordinate5, nodeCoordinate6, nodeCoordinate7, nodeCoordinate8));
+        tsp.init(Arrays.asList(nodeCoordinate2, nodeCoordinate3, nodeCoordinate5, nodeCoordinate6, nodeCoordinate7, nodeCoordinate8, nodeCoordinate4, nodeCoordinate1));
 //        tsp.trace(0, 0);
         List<NodeCoordinate> nodeCoordinates = tsp.findTSP();
         for (int i = 0; i < nodeCoordinates.size() - 1; i++) {
-            aStar.findShortestPath(nodeCoordinates.get(i), nodeCoordinates.get(i + 1));
+//            aStar.findShortestPath(nodeCoordinates.get(i), nodeCoordinates.get(i + 1));
+
         }
         aStar.findShortestPath(nodeCoordinates.get(nodeCoordinates.size() - 1), nodeCoordinate1);
 //        aStar.findShortestPath(nodes.get);

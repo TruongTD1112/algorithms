@@ -29,15 +29,15 @@ public class AStar {
         }
     }
 
-    int height, width;
-    final static int DISTANCE = 1;
-    static int startI, startJ;
-    static int endI, endJ;
-    static NodeCoordinate start, end;
+    public int height, width;
+    public final static int DISTANCE = 1;
+    public static int startI, startJ;
+    public static int endI, endJ;
+    public static NodeCoordinate start, end;
 
-    NodeCoordinate[][] grid = new NodeCoordinate[width][height];
-    PriorityQueue<NodeCoordinate> open = new PriorityQueue<>(Comparator.comparingInt(NodeCoordinate::getFinalCost));
-    boolean[][] closed = new boolean[width][height];
+    public NodeCoordinate[][] grid = new NodeCoordinate[width][height];
+    public PriorityQueue<NodeCoordinate> open = new PriorityQueue<>(Comparator.comparingInt(NodeCoordinate::getFinalCost));
+    public boolean[][] closed = new boolean[width][height];
 
     public void setBlocked(NodeCoordinate nodeCoordinate) {
         grid[nodeCoordinate.getX()][nodeCoordinate.getY()] = null;
@@ -149,6 +149,70 @@ public class AStar {
             System.out.print("[" + nodeCoordinate.getX() + "," + nodeCoordinate.getY() + "]" + " -> ");
         }
         return result;
+    }
+
+    public int findShortestPathV2(NodeCoordinate from, NodeCoordinate to) {
+        from = grid[from.getX()][from.getY()];
+        to = grid[to.getX()][to.getY()];
+        open.add(from);
+        while (true) {
+            try {
+                NodeCoordinate current = open.poll();
+                if (current == null) {
+                    break;
+                }
+                closed[current.getX()][current.getY()] = true;
+                if (current.getX() == to.getX() && current.getY() == to.getY()) {
+                    break;
+                }
+
+                NodeCoordinate candidate;
+                if (current.getX() - 1 >= 0) {
+                    candidate = grid[current.getX() - 1][current.getY()];
+                    checkAndUpdateCost(current, candidate, to);
+                }
+
+                if (current.getY() - 1 >= 0) {
+                    candidate = grid[current.getX()][current.getY() - 1];
+                    checkAndUpdateCost(current, candidate, to);
+                }
+
+                if (current.getY() + 1 < grid[0].length) {
+                    candidate = grid[current.getX()][current.getY() + 1];
+                    checkAndUpdateCost(current, candidate, to);
+                }
+
+                if (current.getX() + 1 < grid.length) {
+                    candidate = grid[current.getX() + 1][current.getY()];
+                    checkAndUpdateCost(current, candidate, to);
+                }
+            }
+            catch(Exception ex) {
+                throw ex;
+            }
+        }
+
+        List<NodeCoordinate> result = new ArrayList<>();
+        if (closed[to.getX()][to.getY()]) {
+            //Trace back the path
+            result.add(to);
+            NodeCoordinate t = grid[to.getX()][to.getY()].getParent();
+            while (t != null) {
+                result.add(t);
+                t = t.getParent();
+            }
+        } else {
+            System.out.println("No possible path");
+        }
+        reset();
+        Collections.reverse(result);
+        System.out.println("Path: ");
+        int last = result.size() - 1;
+        result.remove(last);
+        for (NodeCoordinate nodeCoordinate : result) {
+            System.out.print("[" + nodeCoordinate.getX() + "," + nodeCoordinate.getY() + "]" + " -> ");
+        }
+        return result.size();
     }
 
 

@@ -1,18 +1,17 @@
 package algorithms.data_structure;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class GeneticAlgorithm {
 
 
     int numNodes;
     int[] nodes;
-    int timesOfLoop = 10000000;
+    int timesOfLoop = 100;
     int population = 50;
-    double retentionRate = 0.6;
+    double retentionRate = 0.7;
+    double mutationRate = 0.05;
+    double crossOverRate = 0.8;
 
     List<Individual> pool = new ArrayList<>();
 
@@ -35,17 +34,23 @@ public class GeneticAlgorithm {
             nodes[x1] = nodes[x2];
             nodes[x2] = tmp;
             int fitness = calcFitness(nodes);
-            pool.add(new Individual(nodes, fitness));
+            int[] result = new int[numNodes];
+            for (int j = 1; j < numNodes; j++) {
+                result[j] = nodes[j];
+            }
+            pool.add(new Individual(result, fitness));
         }
     }
 
     public List<Individual> takeMutation(List<Individual> offSprings) {
         for (Individual individual : offSprings) {
-            int x1 = getRandomNumber(1, numNodes - 1);
-            int x2 = getRandomNumber(1, numNodes - 1);
-            int tmp = individual.getGnome()[x1];
-            individual.getGnome()[x1] = individual.getGnome()[x2];
-            individual.getGnome()[x2] = tmp;
+            if ((double) getRandomNumber(1, 100) / 100 < mutationRate) {
+                int x1 = getRandomNumber(1, numNodes - 1);
+                int x2 = getRandomNumber(1, numNodes - 1);
+                int tmp = individual.getGnome()[x1];
+                individual.getGnome()[x1] = individual.getGnome()[x2];
+                individual.getGnome()[x2] = tmp;
+            }
         }
         offSprings.sort(Comparator.comparingInt(t -> t.fitness));
         return offSprings;
@@ -54,75 +59,80 @@ public class GeneticAlgorithm {
     public List<Individual> crossOver() {
         List<Individual> offSprings = new ArrayList<>();
         for (Individual individual : pool) {
-            int rand1 = getRandomNumber(1, population);
-            int rand2 = getRandomNumber(1, population);
-            int[] parent1 = pool.get(rand1).getGnome();
-            int[] parent2 = pool.get(rand2).getGnome();
-            int crossOverPoint = getRandomNumber(1, numNodes - 1);
-            int[] child1 = new int[numNodes];
-            int[] child2 = new int[numNodes];
-            for (int i = 1; i <= crossOverPoint; i++) {
-                child1[i] = parent2[i];
-                child2[i] = parent1[i];
-            }
-            int tmp = crossOverPoint;
-            int tmp1 = crossOverPoint;
-            int tmp2 = crossOverPoint;
-            int tmp3 = crossOverPoint;
-            for (int i = 1; i < numNodes - 1; i++) {
-                int k = ++tmp;
-                if (k >= numNodes - 1) {
-                    k = k - numNodes + 2;
+            if ((double) getRandomNumber(1, 100) / 100 < crossOverRate) {
+                int rand1 = getRandomNumber(1, population);
+                int rand2 = getRandomNumber(1, population);
+                int[] parent1 = pool.get(rand1).getGnome();
+                int[] parent2 = pool.get(rand2).getGnome();
+                int crossOverPoint = getRandomNumber(1, numNodes - 1);
+                int[] child1 = new int[numNodes];
+                int[] child2 = new int[numNodes];
+                for (int i = 1; i <= crossOverPoint; i++) {
+                    child1[i] = parent2[i];
+                    child2[i] = parent1[i];
                 }
-                if (!contains(child1, parent2[k])) {
-                    child1[++tmp1] = parent2[k];
+                int tmp = crossOverPoint;
+                int tmp1 = crossOverPoint;
+                int tmp2 = crossOverPoint;
+                int tmp3 = crossOverPoint;
+                for (int i = 1; i < numNodes - 1; i++) {
+                    int k = ++tmp;
+                    if (k >= numNodes - 1) {
+                        k = k - numNodes + 2;
+                    }
+                    if (!contains(child1, parent2[k])) {
+                        child1[++tmp1] = parent2[k];
+                    }
                 }
-            }
-            for (int i = 1; i < numNodes - 1; i++) {
-                int k =  ++tmp3;
-                if (k >= numNodes - 1) {
-                    k = k - numNodes + 2;
-                }
-                if (!contains(child2, parent1[k])) {
-                    child2[++tmp2] = parent1[k];
+                for (int i = 1; i < numNodes - 1; i++) {
+                    int k = ++tmp3;
+                    if (k >= numNodes - 1) {
+                        k = k - numNodes + 2;
+                    }
+                    if (!contains(child2, parent1[k])) {
+                        child2[++tmp2] = parent1[k];
 
+                    }
                 }
+
+                Individual offSpring1 = new Individual(child1, calcFitness(child1));
+                Individual offSpring2 = new Individual(child2, calcFitness(child2));
+
+                offSprings.add(offSpring1);
+                offSprings.add(offSpring2);
             }
-
-            Individual offSpring1 = new Individual(child1, calcFitness(child1));
-            Individual offSpring2 = new Individual(child2, calcFitness(child2));
-
-            offSprings.add(offSpring1);
-            offSprings.add(offSpring2);
         }
         return offSprings;
     }
 
     public void selectParents(List<Individual> offSprings) {
+        pool.addAll(offSprings);
         pool.sort(Comparator.comparingInt(t -> t.fitness));
-
-        int threshold = (int) (pool.size() * retentionRate);
-        for (int i = threshold; i < pool.size(); i++) {
-            pool.set(i, offSprings.get(i));
-        }
-        pool.sort(Comparator.comparingInt(t -> t.fitness));
+        pool = pool.subList(0, population);
     }
 
     public int getRandomNumber(int min, int max) {
-        return (int) ((Math.random() * (max - min)) + min);
+        Random random = new Random();
+        return random.nextInt(max - min) + min;
     }
 
     public int[] findTSPBYGA() {
         initPopulation();
+        int best = 100000;
         for (int i = 0; i < timesOfLoop; i++) {
-            System.out.println("gen:" + " " + i);
+//            System.out.println("gen:" + " " + i);
             List<Individual> offSprings = crossOver();
             takeMutation(offSprings);
             selectParents(offSprings);
-            System.out.println(pool.get(0).fitness);
+//            if (pool.get(0).fitness < best) {
+            best = pool.get(0).fitness;
+            System.out.println(best);
             System.out.println(Arrays.toString(pool.get(0).gnome));
             System.out.println("------------------------------------------------------------------------");
+//            }
         }
+        System.out.println("_______________finish_________________");
+
         return pool.get(0).gnome;
     }
 
@@ -138,8 +148,8 @@ public class GeneticAlgorithm {
         return result;
     }
 
-    private boolean contains(int [] array, int element) {
-        for (int i = 0; i< array.length; i++) {
+    private boolean contains(int[] array, int element) {
+        for (int i = 0; i < array.length; i++) {
             if (array[i] == element) {
                 return true;
             }

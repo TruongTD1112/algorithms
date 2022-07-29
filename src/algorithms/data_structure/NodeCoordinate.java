@@ -1,5 +1,6 @@
 package algorithms.data_structure;
 
+import algorithms.static_algorithms.AStar;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,9 +15,10 @@ public class NodeCoordinate {
     private int heuristicCost = 0; //Heuristic cost
     private int finalCost = 0; //G+H
 
+    public static int between;
 
     public static int betweenManhattan(NodeCoordinate from, NodeCoordinate to) {
-        return Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
+        return (int) Math.sqrt((from.x - to.x)*(from.x - to.x) + (from.y - to.y)*(from.y - to.y));
     }
 
     NodeCoordinate parent;
@@ -24,4 +26,6 @@ public class NodeCoordinate {
         this.x = x;
         this.y = y;
     }
+
+
 }
