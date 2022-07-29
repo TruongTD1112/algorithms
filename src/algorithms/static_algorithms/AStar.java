@@ -1,7 +1,7 @@
-package com.example.demo.algorithms.static_algorithms;
+package algorithms.static_algorithms;
 
 import java.util.*;
-import com.example.demo.algorithms.data_structure.NodeCoordinate;
+import algorithms.data_structure.NodeCoordinate;
 import lombok.Getter;
 import lombok.Setter;
 

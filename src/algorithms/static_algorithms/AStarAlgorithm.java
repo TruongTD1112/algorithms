@@ -1,7 +1,4 @@
-package com.example.demo.algorithms.static_algorithms;//This code was done with the help from this website  http://www.codebytes.in/2015/02/a-shortest-path-finding-algorithm.html
-//It implementing the shortest path using the A* Algorithm.
-//It also has obstacles which the algorithm has to find the path around it as well.
-//provided are the unit testings showing the function of the algorithm
+package algorithms.static_algorithms;
 
 import java.util.PriorityQueue;
 
@@ -122,16 +119,6 @@ public class AStarAlgorithm {
         }
     }
 
-
-    //testing code for the A* algorithm written
-    /*
-    Params :
-    tCase = test case No.
-    x, y = Board's dimensions
-    si, sj = start location's x and y coordinates
-    ei, ej = end location's x and y coordinates
-    int[][] blocked = array containing inaccessible cell coordinates
-    */
     public static void test(int tCase, int x, int y, int si, int sj, int ei, int ej, int[][] blocked) {
         System.out.println("\n\nTest Case #" + tCase);
         //Reset

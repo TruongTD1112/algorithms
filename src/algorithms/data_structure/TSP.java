@@ -1,6 +1,6 @@
-package com.example.demo.algorithms.data_structure;
+package algorithms.data_structure;
 
-import com.example.demo.algorithms.static_algorithms.AStar;
+import algorithms.static_algorithms.AStar;
 
 import java.util.*;
 

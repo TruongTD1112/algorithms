@@ -1,4 +1,4 @@
-package com.example.demo.algorithms.static_algorithms;
+package algorithms.static_algorithms;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.example.demo.algorithms.data_structure;
+package algorithms.data_structure;
 
 import java.util.ArrayList;
 import java.util.Arrays;

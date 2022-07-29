@@ -1,4 +1,4 @@
-package com.example.demo.algorithms.data_structure;
+package algorithms.data_structure;
 
 import lombok.Getter;
 import lombok.Setter;
