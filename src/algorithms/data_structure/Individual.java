@@ -1,4 +1,4 @@
-package algorithms.data_structure;
+package com.example.demo.algorithms.data_structure;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,19 +8,20 @@ import lombok.Setter;
 public class Individual {
 
 
-    public int[] gnome;
+    public Integer[] gnome;
     public int fitness;
 
-    public Individual(int[] nodes, int fitness) {
+    public Individual(Integer[] nodes, int fitness) {
         this.gnome = nodes;
         this.fitness = fitness;
     }
 
     public String toString() {
-        String result = "";
+        String result = "[";
         for (Integer t : gnome) {
-            result += t.toString();
+            result += t + ", ";
         }
+        result += "]";
         return result;
     }
 

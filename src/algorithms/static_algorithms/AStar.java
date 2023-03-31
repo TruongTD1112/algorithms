@@ -1,7 +1,7 @@
-package algorithms.static_algorithms;
+package com.example.demo.algorithms.static_algorithms;
 
 import java.util.*;
-import algorithms.data_structure.NodeCoordinate;
+import com.example.demo.algorithms.data_structure.NodeCoordinate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,15 +29,15 @@ public class AStar {
         }
     }
 
-    public int height, width;
-    public final static int DISTANCE = 1;
-    public static int startI, startJ;
-    public static int endI, endJ;
-    public static NodeCoordinate start, end;
+    int height, width;
+    final static int DISTANCE = 1;
+    static int startI, startJ;
+    static int endI, endJ;
+    static NodeCoordinate start, end;
 
-    public NodeCoordinate[][] grid = new NodeCoordinate[width][height];
-    public PriorityQueue<NodeCoordinate> open = new PriorityQueue<>(Comparator.comparingInt(NodeCoordinate::getFinalCost));
-    public boolean[][] closed = new boolean[width][height];
+    NodeCoordinate[][] grid = new NodeCoordinate[width][height];
+    PriorityQueue<NodeCoordinate> open = new PriorityQueue<>(Comparator.comparingInt(NodeCoordinate::getFinalCost));
+    boolean[][] closed = new boolean[width][height];
 
     public void setBlocked(NodeCoordinate nodeCoordinate) {
         grid[nodeCoordinate.getX()][nodeCoordinate.getY()] = null;
@@ -85,7 +85,6 @@ public class AStar {
             }
         }
     }
-
 
     public List<NodeCoordinate> findShortestPath(NodeCoordinate from, NodeCoordinate to) {
         from = grid[from.getX()][from.getY()];

@@ -1,11 +1,15 @@
-package algorithms.data_structure;
+package com.example.demo.algorithms.data_structure;
 
-import algorithms.static_algorithms.AStar;
+import com.example.demo.algorithms.static_algorithms.AStar;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class TSP {
+
+    public TSP() {
+    }
+
+    AStar aStar;
 
     int totalDistance = Integer.MAX_VALUE;
     Map<Integer, List<NodeCoordinate>> possibleSolutionResult = new HashMap<>();
@@ -16,12 +20,12 @@ public class TSP {
     int[][] distanceMatrix;
     boolean[] mark;
     int total = 0;
+    List<NodeCoordinate> nodeCoordinates;
 
     GeneticAlgorithm ga;
 
     public void init(List<NodeCoordinate> nodeCoordinates) {
-        AStar aStar = new AStar(36,40);
-        aStar.init();
+        this.nodeCoordinates = nodeCoordinates;
         numNodes = nodeCoordinates.size();
         nodeMap = new HashMap<>();
         int[] nodes = new int[numNodes];
@@ -34,7 +38,7 @@ public class TSP {
         distanceMatrix = new int[numNodes][numNodes];
         for (int i = 0; i < numNodes; i++) {
             for (int j = 0; j < numNodes; j++) {
-                distanceMatrix[i][j] = aStar.findShortestPathV2(nodeMap.get(i), nodeMap.get(j));
+                distanceMatrix[i][j] = NodeCoordinate.betweenManhattan(nodeMap.get(i), nodeMap.get(j));
             }
         }
 
@@ -84,20 +88,16 @@ public class TSP {
         for (NodeCoordinate nodeCoordinate : subList) {
             System.out.printf("(%d, %d)", nodeCoordinate.getX(), nodeCoordinate.getY());
         }
-        for (int i= 0; i< solution.length; i++ ) {
-            System.out.println(distanceMatrix[solution[i]][solution[i+1]]);
-        }
-        System.out.println(distanceMatrix[solution.length][0]);
         return subList;
     }
 
     void traceV2(int k) {
-        for (int i = 0; i< numNodes; i++) {
+        for (int i = 0; i < numNodes; i++) {
             if (!mark[i]) {
                 solution[k] = i;
-                total += distanceMatrix[solution[k-1]][i];
+                total += distanceMatrix[solution[k - 1]][i];
                 mark[i] = true;
-                if (k == numNodes -1) {
+                if (k == numNodes - 1) {
                     if (total + distanceMatrix[solution[k]][0] < totalDistance) {
                         totalDistance = total + distanceMatrix[solution[k]][0];
                         List<NodeCoordinate> nodeCoordinates = new ArrayList<>();
@@ -107,30 +107,36 @@ public class TSP {
                         }
                         possibleSolutionResult.put(total + distanceMatrix[solution[k]][0], nodeCoordinates);
                     }
-                }
-                else {
-                    traceV2(k+1);
+                } else {
+                    traceV2(k + 1);
                 }
                 mark[i] = false;
-                total -= distanceMatrix[solution[k-1]][i];
+                total -= distanceMatrix[solution[k - 1]][i];
             }
         }
     }
 
     public List<NodeCoordinate> findTSP() {
-//        if (numNodes < 10) {
-//            mark[0] = true; // keep
-//            solution[0] = 0; // keep
-//            traceV2(1); // keep
-//            return findBestSolution();// keep
 
-//        } else {
-            int[] orderList = ga.findTSPBYGA();
-            List<NodeCoordinate> result = new ArrayList<>();
-            for (int i = 0; i < numNodes; i++) {
-                result.add(nodeMap.get(orderList[i]));
-            }
-            return result;
+        //by backtracking
+        if (numNodes < 13) {
+            mark[0] = true; // keep
+            solution[0] = 0; // keep
+            traceV2(1); // keep
+            return findBestSolution(); // keep
+        }
+
+        // by genetic algorithm
+        List<Integer> resultGA = Main.init(nodeCoordinates, nodeCoordinates.size());
+        int[] orderList = new int [numNodes];
+        for (int i = 0; i < resultGA.size(); i++) {
+            orderList[i] = resultGA.get(i);
+        }
+        List<NodeCoordinate> result = new ArrayList<>();
+        for (int i = 0; i < numNodes; i++) {
+            result.add(nodeMap.get(orderList[i]));
+        }
+        return result;
 
     }
 
@@ -150,6 +156,7 @@ public class TSP {
         NodeCoordinate nodeCoordinate6 = new NodeCoordinate(20, 24);
         NodeCoordinate nodeCoordinate7 = new NodeCoordinate(8, 31);
         NodeCoordinate nodeCoordinate8 = new NodeCoordinate(4, 36);
+
         NodeCoordinate block1 = new NodeCoordinate(2, 1);
         NodeCoordinate block2 = new NodeCoordinate(2, 2);
         NodeCoordinate block3 = new NodeCoordinate(2, 3);
@@ -162,15 +169,14 @@ public class TSP {
         NodeCoordinate block10 = new NodeCoordinate(1, 4);
         NodeCoordinate block11 = new NodeCoordinate(1, 5);
         NodeCoordinate block12 = new NodeCoordinate(1, 6);
-        List<NodeCoordinate> blockNodeCoordinateList = Arrays.asList(block2, block3, block5, block6, block7, block6, block7, block8, block9, block10, block11, block12);
+        List<NodeCoordinate> blockNodeCoordinateList = Arrays.asList(block1, block2, block3, block4, block5, block6, block7, block8, block9, block10, block11, block12);
         aStar.setBlockedList(blockNodeCoordinateList);
         TSP tsp = new TSP();
-        tsp.init(Arrays.asList(nodeCoordinate2, nodeCoordinate3, nodeCoordinate5, nodeCoordinate6, nodeCoordinate7, nodeCoordinate8, nodeCoordinate4, nodeCoordinate1));
+        tsp.init(Arrays.asList(nodeCoordinate1, nodeCoordinate2, nodeCoordinate3, nodeCoordinate4, nodeCoordinate5, nodeCoordinate6, nodeCoordinate7, nodeCoordinate8));
 //        tsp.trace(0, 0);
         List<NodeCoordinate> nodeCoordinates = tsp.findTSP();
         for (int i = 0; i < nodeCoordinates.size() - 1; i++) {
-//            aStar.findShortestPath(nodeCoordinates.get(i), nodeCoordinates.get(i + 1));
-
+            aStar.findShortestPath(nodeCoordinates.get(i), nodeCoordinates.get(i + 1));
         }
         aStar.findShortestPath(nodeCoordinates.get(nodeCoordinates.size() - 1), nodeCoordinate1);
 //        aStar.findShortestPath(nodes.get);
